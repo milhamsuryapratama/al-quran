@@ -1,3 +1,3 @@
 # al-quran
 
-Intial Repo
+Intial Repository
