@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
 )
 
 type Resdata struct {
@@ -33,6 +36,11 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 		return
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +74,6 @@ func main() {
 
 	})
 
-	fmt.Println("server started at localhost:9000")
-	http.ListenAndServe(":9000", nil)
+	fmt.Println("server started")
+	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
