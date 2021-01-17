@@ -44,12 +44,6 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
-		//var data = map[string]interface{}{
-		//	"title": "Learning Golang Web",
-		//	"name":  "Batman",
-		//}
-
 		response, err := http.Get("http://api.alquran.cloud/v1/surah/1/ar.alafasy")
 		if err != nil {
 			fmt.Printf("The HTTP request failed with error %s\n", err)
@@ -63,8 +57,6 @@ func main() {
 			fmt.Println(err.Error())
 			return
 		}
-
-		fmt.Println(res)
 
 		err = tmpl.ExecuteTemplate(w, "index", res)
 		if err != nil {
