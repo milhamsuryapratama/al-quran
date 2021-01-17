@@ -1,0 +1,71 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"html/template"
+	"net/http"
+)
+
+type Resdata struct {
+	Code   int    `json:"code"`
+	Status string `json:"status"`
+	Data   Data
+}
+
+type Data struct {
+	Number        int    `json:"number"`
+	Name          string `json:"name"`
+	EnglishName   string `json:"englishName"`
+	NumberOfAyahs int    `json:"numberOfAyahs"`
+	Ayahs         []Ayahs
+}
+
+type Ayahs struct {
+	Text          string `json:"text"`
+	NumberInSurah int    `json:"numberInSurah"`
+}
+
+//var myClient = &http.Client{Timeout: 10 * time.Second}
+
+func main() {
+	var tmpl, err = template.ParseGlob("views/*")
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		//var data = map[string]interface{}{
+		//	"title": "Learning Golang Web",
+		//	"name":  "Batman",
+		//}
+
+		response, err := http.Get("http://api.alquran.cloud/v1/surah/1/ar.alafasy")
+		if err != nil {
+			fmt.Printf("The HTTP request failed with error %s\n", err)
+			return
+		}
+
+		var res Resdata
+
+		err = json.NewDecoder(response.Body).Decode(&res)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		fmt.Println(res)
+
+		err = tmpl.ExecuteTemplate(w, "index", res)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+	})
+
+	fmt.Println("server started at localhost:9000")
+	http.ListenAndServe(":9000", nil)
+}

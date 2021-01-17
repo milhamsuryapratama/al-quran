@@ -1,9 +1,0 @@
-{
-  "name": "al-quran",
-  "version": "1.0.0",
-  "description": "al-quran",
-  "main": "index.js",
-  "repository": "https://github.com/milhamsuryapratama/al-quran.git",
-  "author": "ilham",
-  "license": "MIT"
-}
