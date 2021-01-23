@@ -38,8 +38,9 @@
     <script>
         $(function () {
             var n = 0;
-            // var firstAyah = $("#ayah0").data("audio")
-            // $("#audiosrc").attr("src", firstAyah)
+            var firstAyah = $("#ayah0").data("audio")
+            $("#audiosrc").attr("src", firstAyah)
+            $("#audio").get(0).load()
 
             $("#audio").on("play", function () {
                 $("#ayah"+n).css("color", "aqua")
