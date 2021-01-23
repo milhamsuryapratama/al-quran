@@ -16,6 +16,11 @@ type Resdata struct {
 	Data   Data
 }
 
+type Surah struct {
+	Resdata Resdata
+	Data    []Data
+}
+
 type Data struct {
 	Number        int    `json:"number"`
 	Name          string `json:"name"`
@@ -27,6 +32,7 @@ type Data struct {
 type Ayahs struct {
 	Text          string `json:"text"`
 	NumberInSurah int    `json:"numberInSurah"`
+	Audio         string `json:"audio"`
 }
 
 //var myClient = &http.Client{Timeout: 10 * time.Second}
@@ -63,7 +69,28 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+	})
 
+	http.HandleFunc("/surah", func(w http.ResponseWriter, r *http.Request) {
+		response, err := http.Get("http://api.alquran.cloud/v1/surah")
+		if err != nil {
+			fmt.Printf("The HTTP request failed with error %s\n", err)
+			return
+		}
+
+		var res Surah
+
+		err = json.NewDecoder(response.Body).Decode(&res)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		err = tmpl.ExecuteTemplate(w, "surah", res)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 
 	fmt.Println("server started")
