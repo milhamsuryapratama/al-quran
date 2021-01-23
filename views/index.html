@@ -3,45 +3,29 @@
     <html lang="en">
     <head>
         <meta content='maximum-scale=1.0, initial-scale=1.0, width=device-width' name='viewport'>
-        <title>Title</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>Home</title>
+        {{ template "_header"}}
     </head>
     <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Al-Qur'an</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">JUZ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">SURAH</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <br/>
+    {{ template "_nav"}}
 
     <div class="container">
         <div class="card text-center">
             <div class="card-header">
-                <h5 class="card-title">Surah : {{ .Data.Name }}, Name : {{ .Data.EnglishName }}, Total Ayat : {{ .Data.NumberOfAyahs }}</h5>
+                <h5 class="card-title" id="surah" data-numofayah="{{ .Data.NumberOfAyahs }}">Surah : {{ .Data.Name }}, Name : {{ .Data.EnglishName }}, Total Ayat : {{ .Data.NumberOfAyahs }}</h5>
             </div>
         </div>
         <br/>
+        <center>
+            <audio id="audio" controls>
+                <source id="audiosrc" src="https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/1">
+            </audio>
+        </center>
+        <br/>
         {{ range $key, $val := .Data.Ayahs }}
             <div class="card">
-                <div class="card-body" style="text-align: right">
+                <div class="card-body" style="text-align: right;" id="ayah{{ $key }}" data-audio="{{ $val.Audio }}">
                     <h5 class="card-title">({{ $val.NumberInSurah }}) {{ $val.Text }}</h5>
                 </div>
             </div>
@@ -49,6 +33,35 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script>
+        $(function () {
+            var n = 0;
+            // var firstAyah = $("#ayah0").data("audio")
+            // $("#audiosrc").attr("src", firstAyah)
+
+            $("#audio").on("play", function () {
+                $("#ayah"+n).css("color", "aqua")
+            })
+
+            $("#audio").on("ended", function () {
+                let numOfAyah = $("#surah").data("numofayah")
+                $("#ayah"+n).css("color", "black")
+                n = n+1
+                if (n == numOfAyah) {
+                    $("#audio").get(0).pause()
+                    $("#audio").get(0).load()
+                    $("#audiosrc").attr("src", firstAyah)
+                    n = 0
+                    return
+                }
+                $("#audiosrc").attr("src", $("#ayah"+n).data("audio"))
+                $("#audio").get(0).load()
+                $("#audio").get(0).play()
+            });
+        })
+    </script>
     </body>
     </html>
 {{end}}
